@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Chivo-Test",
+    "slug": "Chivo-Test",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "Chivo-Test"
+}
