@@ -10,6 +10,9 @@ import { GlobalDataContext } from '../App';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LogIn({ navigation }) {
+  //
+
+  //
   const { username, setUsername } = React.useContext(GlobalDataContext);
   const handleSubmit = async () => {
     if (username) {
@@ -49,6 +52,7 @@ const styles = StyleSheet.create({
   input: {
     borderColor: 'black',
     borderWidth: 1,
+    width: 250,
   },
   button: {
     margin: 10,

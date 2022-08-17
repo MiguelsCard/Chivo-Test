@@ -1,11 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-
+import React, { useState, useEffect } from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import { GlobalDataContext } from '../App';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function CryptoList() {
+export default function CryptoList({ navigation }) {
   const [user, setUser] = useState('');
   const [cryptos, setCryptos] = useState(null);
+  const [percent, setPercent] = useState(0);
+  const [filter, setFilter] = useState(0);
+  const { setSingleCrypto } = React.useContext(GlobalDataContext);
+  const online = true;
+
   const storeTopFifty = async (value) => {
     try {
       await AsyncStorage.setItem('topFifty', JSON.stringify(value));
@@ -26,7 +37,7 @@ export default function CryptoList() {
     }
   };
   const fetchCoins = async () => {
-    fetch('https://api.coinlore.net/api/tickers/?start=0&limit=5')
+    fetch('https://api.coinlore.net/api/tickers/?start=0&limit=49')
       .then(
         (res) => res.json() // this returns a promise
       )
@@ -51,29 +62,101 @@ export default function CryptoList() {
   };
   useEffect(() => {
     getUsername();
+    //Keep timeout here in case of accidental infinite loops
     setTimeout(fetchCoins, 1000);
   }, []);
   console.log('USER: ', user);
-
+  const handleFilter = () => {
+    // if (typeof percent === 'number') {
+    if (percent) {
+      setFilter(parseInt(percent));
+      console.log('FILTER: ', filter);
+    } else {
+      setFilter(0);
+    }
+    // } else {
+    // alert('Please enter a number');
+    // }
+  };
+  const handleCoin = (crypto) => {
+    if (online) {
+      console.log('CRYPTO: ', crypto);
+      setSingleCrypto(crypto);
+      navigation.navigate('SingleCrypto');
+    }
+  };
   if (!cryptos) {
     return (
-      <View>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Loading Coins</Text>
       </View>
     );
   } else {
     return (
-      <View style={{ flex: 1, backgroundColor: 'pink' }}>
-        <Text>Welcome {user}!</Text>
+      <View style={{ flex: 1 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text>Welcome {user}!</Text>
+          <View style={styles.filter}>
+            <Text>Filter by percentage </Text>
+            <TextInput
+              onChangeText={setPercent}
+              value={percent}
+              style={styles.input}
+            ></TextInput>
+            <Text> %</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleFilter()}
+          >
+            <Text>Filter</Text>
+          </TouchableOpacity>
+        </View>
         {cryptos.map((crypto) => {
-          return (
-            <View key={crypto.id}>
-              <Text>{crypto.name}</Text>
-              <Text>{crypto.price_usd}</Text>
-            </View>
-          );
+          if (filter === 0 || crypto.percent_change_24h >= filter) {
+            return (
+              <TouchableOpacity
+                key={crypto.id}
+                style={styles.coins}
+                onPress={() => handleCoin(crypto)}
+              >
+                <Text>{crypto.name}</Text>
+                <Text>24H Percent change: {crypto.percent_change_24h}</Text>
+              </TouchableOpacity>
+            );
+          }
         })}
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  filter: {
+    flexDirection: 'row',
+  },
+  coins: {
+    borderRadius: 2,
+    backgroundColor: 'lightgray',
+    padding: 10,
+    margin: 10,
+  },
+  input: {
+    width: 50,
+    borderColor: 'black',
+    borderWidth: 1,
+  },
+  button: {
+    margin: 5,
+    backgroundColor: 'lightblue',
+    borderRadius: 10,
+    padding: 5,
+    width: 100,
+    alignItems: 'center',
+  },
+});
