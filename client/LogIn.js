@@ -6,12 +6,20 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import { GlobalDataContext } from '../App';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function LogIn() {
-  const [username, setUsername] = useState('');
-  const handleSubmit = () => {
+export default function LogIn({ navigation }) {
+  const { username, setUsername } = React.useContext(GlobalDataContext);
+  const handleSubmit = async () => {
     if (username) {
-      console.log('LOGGING IN AS: ', username);
+      try {
+        await AsyncStorage.setItem('username', username);
+        console.log('SAVED AND LOGGING IN AS: ', username);
+      } catch (e) {
+        console.log('DIDNT SAVE');
+      }
+      navigation.navigate('CryptoList');
     } else {
       console.log('NO USERNAME');
     }
