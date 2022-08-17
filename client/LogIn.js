@@ -18,13 +18,12 @@ export default function LogIn({ navigation }) {
     if (username) {
       try {
         await AsyncStorage.setItem('username', username);
-        console.log('SAVED AND LOGGING IN AS: ', username);
       } catch (e) {
-        console.log('DIDNT SAVE');
+        alert('DIDNT SAVE');
       }
       navigation.navigate('CryptoList');
     } else {
-      console.log('NO USERNAME');
+      alert('Please enter a username');
     }
   };
   return (
@@ -53,6 +52,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     width: 250,
+    padding: 2,
   },
   button: {
     margin: 10,

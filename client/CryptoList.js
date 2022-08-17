@@ -14,8 +14,28 @@ export default function CryptoList({ navigation }) {
   const [cryptos, setCryptos] = useState(null);
   const [percent, setPercent] = useState(0);
   const [filter, setFilter] = useState(0);
-  const { setSingleCrypto } = React.useContext(GlobalDataContext);
-  const online = true;
+  const { setSingleCrypto, online, setOnline } =
+    React.useContext(GlobalDataContext);
+
+  let line = true;
+
+  function checkOnline() {
+    fetch('https://api.coinlore.net/api/global/')
+      .then(
+        (resp) => resp.json() // this returns a promise
+      )
+      .then((res) => {
+        setOnline(true);
+      })
+      .catch((ex) => {
+        if (line) {
+          setOnline(false);
+          line = false;
+          alert('Something went wrong with your connection');
+        }
+      });
+  }
+  setInterval(checkOnline, 5000);
 
   const storeTopFifty = async (value) => {
     try {
@@ -29,8 +49,6 @@ export default function CryptoList({ navigation }) {
       const top50 = await AsyncStorage.getItem('topFifty');
       const topFifty = JSON.parse(top50);
       setCryptos(topFifty);
-      console.log('In getTopFifty: ', topFifty, cryptos);
-      // console.log('In getTopFifty-2: ', topFifty, cryptos);
       return topFifty;
     } catch (error) {
       console.log(error);
@@ -43,7 +61,6 @@ export default function CryptoList({ navigation }) {
       )
       .then((res) => {
         const { data } = res;
-        console.log('FETCH: ', data);
         storeTopFifty(data);
         getTopFifty();
       })
@@ -65,12 +82,11 @@ export default function CryptoList({ navigation }) {
     //Keep timeout here in case of accidental infinite loops
     setTimeout(fetchCoins, 1000);
   }, []);
-  console.log('USER: ', user);
+
   const handleFilter = () => {
     // if (typeof percent === 'number') {
     if (percent) {
       setFilter(parseInt(percent));
-      console.log('FILTER: ', filter);
     } else {
       setFilter(0);
     }
@@ -80,7 +96,6 @@ export default function CryptoList({ navigation }) {
   };
   const handleCoin = (crypto) => {
     if (online) {
-      console.log('CRYPTO: ', crypto);
       setSingleCrypto(crypto);
       navigation.navigate('SingleCrypto');
     }
@@ -147,6 +162,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   input: {
+    padding: 2,
     width: 50,
     borderColor: 'black',
     borderWidth: 1,
