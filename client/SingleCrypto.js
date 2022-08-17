@@ -34,7 +34,7 @@ export default function SingleCrypto() {
       }
       console.log(count);
       fetchSingle(singleCrypto);
-    }, 10000);
+    }, 30000);
     let clock = setInterval(function () {
       if (timer > 0) {
         timer--;
@@ -44,7 +44,7 @@ export default function SingleCrypto() {
         setTiming(0);
         clearInterval(clock);
       }
-    }, 30000);
+    }, 1000);
   }, []);
   return (
     <View style={{ flex: 1, backgroundColor: 'teal', padding: 5 }}>
