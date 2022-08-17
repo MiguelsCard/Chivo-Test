@@ -6,7 +6,7 @@ export default function SingleCrypto() {
   const { singleCrypto } = React.useContext(GlobalDataContext);
   const [price, setPrice] = useState(singleCrypto.price_usd);
   const [counting, setCounting] = useState(0);
-  const [timing, setTiming] = useState(10);
+  const [timing, setTiming] = useState(30);
   const fetchSingle = async (singleCrypto) => {
     fetch(`https://api.coinlore.net/api/ticker/?id=${singleCrypto.id}`)
       .then(
@@ -22,11 +22,11 @@ export default function SingleCrypto() {
   };
   //
   let count = 0;
-  let timer = 10;
+  let timer = 30;
 
   useEffect(() => {
     let interval = setInterval(function () {
-      timer = 10;
+      timer = 30;
       count += 1;
       setCounting(count);
       if (count === 5) {
@@ -44,7 +44,7 @@ export default function SingleCrypto() {
         setTiming(0);
         clearInterval(clock);
       }
-    }, 1000);
+    }, 30000);
   }, []);
   return (
     <View style={{ flex: 1, backgroundColor: 'teal', padding: 5 }}>
